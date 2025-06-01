@@ -342,8 +342,8 @@ function Process(request)
   -- highest. Calculating a string index from a “bright” pixel (one with a high
   -- HSL lightness, for example) will result in a higher index and map to a
   -- lower density character, not a high density character that we might expect.
-  -- Thus, nverting the image results in a more natural mapping of characters to
-  -- pixels (brighter pixels get denser characters).
+  -- Thus, inverting the image results in a more natural mapping of characters
+  -- to pixels (brighter pixels get denser characters).
   local invert = InputInvert:GetValue(request).Value == 0
   if invert then
     downsampledImage = downsampledImage:ChannelOpOf("Invert", nil, { R="bg.R", G="bg.G", B="bg.B" })
