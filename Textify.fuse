@@ -375,7 +375,7 @@ function Process(request)
 
       local characterList
       if isNilOrEmptyString(text) or translationTable == nil then
-        characterList = asciiStyles[conversionStrategyIndex + 1]
+        characterList = conversionStrategies[conversionStrategyIndex + 1]
       else
         local idx = textIndex + 1
         local character = text:sub(idx, idx)
