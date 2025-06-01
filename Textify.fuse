@@ -1,0 +1,433 @@
+TextifyVersion = "1.0.0"
+RELEASE = false
+
+FuRegisterClass("Textify", CT_Tool, {
+  REGS_Name             = "Textify",
+  REGS_Category         = "Miscellaneous",
+  REGS_OpIconString     = "Txt",
+  REGS_OpDescription    = "Image-to-text conversion",
+  REGS_URL              = "https://github.com/nwhetsell/fuse-textify",
+  REG_NoMotionBlurCtrls = true,
+  REG_NoBlendCtrls      = false,
+  REG_OpNoMask          = false,
+  REG_Fuse_NoEdit       = RELEASE,
+  REG_Fuse_NoReload     = RELEASE,
+  REG_SupportsDoD       = true,
+  REG_Version           = TextifyVersion
+})
+
+local conversionStrategies = {
+  "@BG8Cou; ",
+  "#|/+=-. ",
+  "8960453271 ",
+  "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. "
+}
+
+function Create()
+  ---@diagnostic disable: undefined-global # because `self` is undefined here
+
+  ---@param labelName string
+  ---@param scriptName string
+  ---@param attributes table
+  ---@return Input
+  local function addInput(labelName, scriptName, attributes)
+    return self:AddInput(labelName, scriptName, attributes)
+  end
+
+  ---@param labelName string
+  ---@param scriptName string
+  ---@param attributes table
+  ---@return Output
+  ---@nodiscard
+  local function addOutput(labelName, scriptName, attributes)
+    return self:AddOutput(labelName, scriptName, attributes)
+  end
+
+  ---@diagnostic enable: undefined-global
+
+  InputFont = addInput("Font", "Font", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "FontFileControl",
+    IC_ControlGroup = 2,
+    IC_ControlID = 0,
+    INP_Level = 1,
+    INP_DoNotifyChanged = true
+  })
+
+  InputFontStyle = addInput("Style", "Style", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "FontFileControl",
+    IC_ControlGroup = 2,
+    IC_ControlID = 1,
+    INP_Level = 1,
+    INP_DoNotifyChanged = true
+  })
+
+  InputConversionStrategyIndex = addInput("Conversion Strategy", "ConversionStrategyIndex", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "ComboControl",
+    INP_Default = 0.0,
+    INP_Integer = true,
+    { CCS_AddString = "Round – " .. conversionStrategies[1]:gsub("%s+", "") },
+    { CCS_AddString = "Square – " .. conversionStrategies[2]:gsub("%s+", "") },
+    { CCS_AddString = "Numbers – " .. conversionStrategies[3]:gsub("%s+", "") },
+    { CCS_AddString = "ASCII Characters" }
+  })
+
+  InputCharactersPerLine = addInput("Characters per Line","CharactersPerLine", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 200,
+    INP_MinScale = 1,
+    INP_Default = 80,
+    INP_Integer = true
+  })
+
+  InputSizeFactor = addInput("Size Factor", "SizeFactor", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 5,
+    INP_MinScale = 1,
+    INP_Default = 2.5
+  })
+
+  InputSaturation = addInput("Desaturation", "Saturation", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_Default = 0.0
+  })
+
+  InputContrast = addInput("Contrast", "Contrast", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 10.0,
+    INP_MinScale = 0.0,
+    INP_Default = 1.0
+  })
+
+  InputInvert = addInput("Invert", "Invert", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "CheckboxControl",
+    INP_Integer = true,
+    INP_Default = 0
+  })
+
+  InputOversampling = addInput("Oversampling", "Oversampling", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_Integer = true,
+    INP_Default = 8
+  })
+
+  InputText = addInput("Text", "Text", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "TextEditControl",
+    TEC_Lines = 5,
+    TEC_Wrap = true
+  })
+
+  InputTranslationTableText = addInput("Translation Table", "TranslationTable", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "TextEditControl",
+    TEC_Lines = 29
+  })
+
+  InputTranslationTableDefaultButton = addInput("Use Default Translation Table", "UseDefaultTranslationTable", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "ButtonControl",
+    BTNC_Align = "Right", -- This doesn’t appear to do anything.
+    INP_DoNotifyChanged = true,
+    INP_External = false
+  })
+
+  addInput("Textify v" .. TextifyVersion, "Version", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "LabelControl",
+    INP_External = false,
+    INP_Passive = true,
+  })
+
+  addInput("Based on Computer Vision by Meta Fide", "Attribution", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "LabelControl",
+    INP_External = false,
+    INP_Passive = true,
+  })
+
+  InputImage = addInput("Input", "Input", {
+    LINKID_DataType = "Image",
+    LINK_Main = 1
+  })
+  OutputImage = addOutput("Output", "Output", {
+    LINKID_DataType = "Image",
+    LINK_Main = 1
+  })
+  OutputScaledDownsampledImage = addOutput("Scaled downsampled Image", "ScaledDownsampledImage", {
+    LINKID_DataType = "Image",
+    LINK_Main = 2
+  })
+  OutputRawDownsampledImage = addOutput("Raw downsampled Image", "RawDownsampledImage", {
+    LINKID_DataType = "Image",
+    LINK_Main = 3
+  })
+end
+
+local function isNilOrEmptyString(arg)
+  return arg == nil or string.len(arg) == 0
+end
+
+---@param input Input Input object for the control that changed
+---@param parameter Parameter Parameter object produced by the control
+---@param frame integer Frame when control changed
+function NotifyChanged(input, parameter, frame)
+  if InputFont == input then
+    if isNilOrEmptyString(parameter.Value) then
+      InputFont:SetSource(Text("Courier"), frame)
+    end
+  elseif InputFontStyle == input then
+    if isNilOrEmptyString(parameter.Value) then
+      InputFontStyle:SetSource(Text("Regular"), frame)
+    end
+  elseif InputTranslationTableDefaultButton == input then
+    if parameter.Value == 1 then
+      InputTranslationTableText:SetSource(
+        -- This is
+        --[[
+          {
+            a = "@Aa",
+            b = "Bb",
+            c = "Cc",
+            d = "Dd",
+            e = "Ee",
+            f = "Ff",
+            g = "Gg",
+            h = "Hh",
+            i = "Ii",
+            j = "Jj",
+            k = "Kk",
+            l = "Ll",
+            m = "Mm",
+            n = "Nn",
+            o = "Oo",
+            p = "Pp",
+            q = "Qq",
+            r = "Rr",
+            s = "Ss",
+            t = "Tt",
+            u = "Uu",
+            v = "Vv",
+            w = "Ww",
+            x = "Xx",
+            y = "Yy",
+            z = "Zz",
+            [" "]  = ";:,^`'. "
+          }
+        ]]
+        -- with appropriate escapes.
+        Text("{\
+  a = \"@Aa\",\
+  b = \"Bb\",\
+  c = \"Cc\",\
+  d = \"Dd\",\
+  e = \"Ee\",\
+  f = \"Ff\",\
+  g = \"Gg\",\
+  h = \"Hh\",\
+  i = \"Ii\",\
+  j = \"Jj\",\
+  k = \"Kk\",\
+  l = \"Ll\",\
+  m = \"Mm\",\
+  n = \"Nn\",\
+  o = \"Oo\",\
+  p = \"Pp\",\
+  q = \"Qq\",\
+  r = \"Rr\",\
+  s = \"Ss\",\
+  t = \"Tt\",\
+  u = \"Uu\",\
+  v = \"Vv\",\
+  w = \"Ww\",\
+  x = \"Xx\",\
+  y = \"Yy\",\
+  z = \"Zz\",\
+  [\" \"]  = \";:,^`'. \"\
+}"),
+        frame
+      )
+    end
+  end
+end
+
+---@param request Request
+function Process(request)
+  local inputImage = InputImage:GetValue(request) --[[@as Image]]
+  local outputImage = Image({ IMG_Like = inputImage })
+  outputImage:Clear()
+
+  local translationTable = {}
+  local func, err = load("return function() return " .. InputTranslationTableText:GetValue(request).Value .. " end")
+  if func then
+    local ok, getTranslationTable = pcall(func)
+    if ok then
+      translationTable = getTranslationTable()
+    else
+      print("Execution error:", getTranslationTable)
+    end
+  else
+    print("Compilation error:", err)
+  end
+
+  -- Downsample the image so that there is one pixel per character.
+  local sizeFactor = InputSizeFactor:GetValue(request).Value --[[@as number]]
+  local charactersPerLine = InputCharactersPerLine:GetValue(request).Value --[[@as integer]]
+  local characterWidth = 1 / charactersPerLine
+  local size = sizeFactor * characterWidth
+  local font = InputFont:GetValue(request).Value --[[@as string]]
+  local style = InputFontStyle:GetValue(request).Value --[[@as string]]
+  local fontMetrics = TextStyleFontMetrics(TextStyleFont(font, style))
+  local lineHeight = (fontMetrics.TextAscent + fontMetrics.TextDescent + fontMetrics.TextExternalLeading) * 10 * size
+
+  local aspectRatio = inputImage.Width / inputImage.Height
+
+  -- The width of the downsampled image is the number of characters per line.
+  -- For the downsampled image to have one character per pixel, its height
+  -- should be the number of lines. The value of lineHeight seems to be in units
+  -- normalized by the width of the input image. So, when normalized by width,
+  -- the height of the image is
+  --   image.Height / image.Width
+  -- which is equal to
+  --   1 / aspectRatio
+  -- Dividing this by lineHeight should give the number of lines.
+  local lineCount = math.ceil((1 / aspectRatio) / lineHeight)
+
+  local downsampledImage = Image({
+    IMG_Like = inputImage,
+    IMG_Width = charactersPerLine,
+    IMG_Height = lineCount,
+    IMAT_OriginalWidth = charactersPerLine,
+    IMAT_OriginalHeight = lineCount,
+    IMG_Depth = 1 -- TODO: Is this necessary?
+  })
+  inputImage:Resize(downsampledImage, { RSZ_Filter = "Nearest" })
+
+  -- Output the downsampled image, scaled to the same size as the input image,
+  -- to make it easy to add color to the output text.
+  local scaledDownsampledImage = Image({
+    IMG_Like = downsampledImage,
+    IMG_Width = inputImage.Width,
+    IMG_Height = inputImage.Height,
+    IMAT_OriginalWidth = inputImage.Width,
+    IMAT_OriginalHeight = inputImage.Height
+  })
+  downsampledImage:Resize(scaledDownsampledImage, { RSZ_Filter = "Nearest" })
+  OutputScaledDownsampledImage:Set(request, scaledDownsampledImage)
+
+  -- Further process the downsampled image.
+  local saturation = InputSaturation:GetValue(request).Value --[[@as number]]
+  downsampledImage:Saturate(saturation, saturation, saturation)
+
+  local contrast = InputContrast:GetValue(request).Value --[[@as number]]
+  local colorMatrix = ColorMatrix()
+  colorMatrix:Offset(-0.5, -0.5, -0.5)
+  colorMatrix:Scale(contrast, contrast, contrast)
+  colorMatrix:Offset(0.5, 0.5, 0.5)
+  downsampledImage = downsampledImage:ApplyMatrixOf(colorMatrix, {})
+
+  -- The Invert checkbox is confusing because we invert the image when the
+  -- checkbox is *disabled*. This is because strings of characters that map to
+  -- pixels are typically ordered from most dense (like @) to least dense (like
+  -- a space character). Consequently, the most dense characters are at the
+  -- lowest indexes of a string, and the least dense characters are at the
+  -- highest. Calculating a string index from a “bright” pixel (one with a high
+  -- HSL lightness, for example) will result in a higher index and map to a
+  -- lower density character, not a high density character that we might expect.
+  -- Thus, nverting the image results in a more natural mapping of characters to
+  -- pixels (brighter pixels get denser characters).
+  local invert = InputInvert:GetValue(request).Value == 0
+  if invert then
+    downsampledImage = downsampledImage:ChannelOpOf("Invert", nil, { R="bg.R", G="bg.G", B="bg.B" })
+  end
+
+  -- Also output the raw downsampled image (which is probably only useful for
+  -- debugging).
+  OutputRawDownsampledImage:Set(request, downsampledImage)
+
+  -- Convert each pixel in the downsampled image to a character.
+  local conversionStrategyIndex = InputConversionStrategyIndex:GetValue(request).Value --[[@as integer]]
+
+  local text = InputText:GetValue(request).Value --[[@as string]]
+  local frame = request:GetTime()
+  local textIndex = frame
+  textIndex = textIndex + (frame * charactersPerLine)
+  textIndex = textIndex % text:len()
+
+  local downsampledImagePixel = Pixel()
+  local textLines = {}
+  for imageY = 0, downsampledImage.Height - 1 do
+    local row = {}
+
+    for imageX = 0, downsampledImage.Width - 1 do
+      downsampledImage:GetPixel(imageX, imageY, downsampledImagePixel)
+      -- https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
+      local lightness = 0.5 * (math.max(downsampledImagePixel.R, downsampledImagePixel.G, downsampledImagePixel.B) +
+                               math.min(downsampledImagePixel.R, downsampledImagePixel.G, downsampledImagePixel.B))
+
+      local characterList
+      if isNilOrEmptyString(text) or translationTable == nil then
+        characterList = asciiStyles[conversionStrategyIndex + 1]
+      else
+        local idx = textIndex + 1
+        local character = text:sub(idx, idx)
+        characterList = translationTable[character]
+        assert(characterList, "No character list available for character " .. character .. " at index " .. textIndex .. " of input text \"" .. text .. "\"")
+
+        textIndex = (textIndex + 1) % text:len()
+      end
+
+      local idx = math.floor(lightness * (characterList:len() - 1) + 1)
+      row[imageX + 1] = characterList:sub(idx, idx)
+    end
+
+    textLines[imageY] = table.concat(row)
+  end
+
+  -- Composite character shapes into a Shape object.
+  local shape = Shape()
+
+  local characterTranslationMatrix = Matrix4()
+  characterTranslationMatrix:Scale(size / fontMetrics.Scale, size / fontMetrics.Scale, 1)
+  characterTranslationMatrix:Move(0, 0, 0)
+
+  for _, line in ipairs(textLines) do
+    local lineLength = line:len()
+    for i = 1, lineLength do
+      -- Translate to the center of the character.
+      characterTranslationMatrix:Move(0.5 * characterWidth, 0, 0)
+
+      local characterShape = fontMetrics:GetCharacterShape(line:byte(i), false)
+      -- Some characters (like spaces) have nil shape.
+      if characterShape then
+        shape:AddShape(characterShape:TransformOfShape(characterTranslationMatrix))
+      end
+
+      -- Translate to the end of the character.
+      characterTranslationMatrix:Move(0.5 * characterWidth, 0, 0)
+    end
+
+    -- Place the next character at the beginning of the line above.
+    characterTranslationMatrix:Move(-lineLength * characterWidth, lineHeight, 0)
+  end
+
+  -- Fill the shape.
+  local oversampling = InputOversampling:GetValue(request).Value --[[@as integer]]
+  local outputImageChannel = ImageChannel(outputImage, oversampling)
+  outputImageChannel:SetStyleFill(FillStyle()) -- TODO: Is this necessary?
+  outputImageChannel:ShapeFill(shape)
+
+  local channelStyle = ChannelStyle()
+  channelStyle.Color = Pixel({ R=1, G=1, B=1, A=1 }) -- Text is always white.
+  outputImageChannel:PutToImage("CM_Merge", channelStyle)
+
+  OutputImage:Set(request, outputImage)
+end
