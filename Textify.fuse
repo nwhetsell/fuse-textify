@@ -83,7 +83,7 @@ function Create()
     INP_Integer = true
   })
 
-  InputSizeFactor = addInput("Size Factor", "SizeFactor", {
+  InputFontSizeFactor = addInput("Font Size Factor", "FontSizeFactor", {
     LINKID_DataType = "Number",
     INPID_InputControl = "SliderControl",
     INP_MaxScale = 5,
@@ -279,7 +279,7 @@ function Process(request)
   end
 
   -- Downsample the image so that there is one pixel per character.
-  local sizeFactor = InputSizeFactor:GetValue(request).Value --[[@as number]]
+  local sizeFactor = InputFontSizeFactor:GetValue(request).Value --[[@as number]]
   local charactersPerLine = InputCharactersPerLine:GetValue(request).Value --[[@as integer]]
   local characterWidth = 1 / charactersPerLine
   local size = sizeFactor * characterWidth
