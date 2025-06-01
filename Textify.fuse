@@ -91,6 +91,22 @@ function Create()
     INP_Default = 2.5
   })
 
+  InputYOffsetFactor = addInput("Y Offset Factor", "YOffsetFactor", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 1,
+    INP_MinScale = 0,
+    INP_Default = 0.25
+  })
+
+  InputLineHeightFactor = addInput("Line Height Factor", "LineHeightFactor", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 2,
+    INP_MinScale = 0.5,
+    INP_Default = 1
+  })
+
   InputSaturation = addInput("Input Desaturation", "Saturation", {
     LINKID_DataType = "Number",
     INPID_InputControl = "SliderControl",
@@ -287,6 +303,10 @@ function Process(request)
   local style = InputFontStyle:GetValue(request).Value --[[@as string]]
   local fontMetrics = TextStyleFontMetrics(TextStyleFont(font, style))
   local lineHeight = (fontMetrics.TextAscent + fontMetrics.TextDescent + fontMetrics.TextExternalLeading) * 10 * size
+  local lineHeightFactor = InputLineHeightFactor:GetValue(request).Value --[[@as number]]
+  if lineHeightFactor > 0 then
+    lineHeight = lineHeight * lineHeightFactor
+  end
 
   local aspectRatio = inputImage.Width / inputImage.Height
 
@@ -397,7 +417,8 @@ function Process(request)
 
   local characterTranslationMatrix = Matrix4()
   characterTranslationMatrix:Scale(size / fontMetrics.Scale, size / fontMetrics.Scale, 1)
-  characterTranslationMatrix:Move(0, 0, 0)
+  local yOffsetFactor = InputYOffsetFactor:GetValue(request).Value --[[@as number]]
+  characterTranslationMatrix:Move(0, yOffsetFactor * lineHeight, 0)
 
   for _, line in ipairs(textLines) do
     local lineLength = line:len()
