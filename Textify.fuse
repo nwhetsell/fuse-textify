@@ -1,4 +1,4 @@
-TextifyVersion = "1.0.0"
+TextifyVersion = 1
 RELEASE = false
 
 FuRegisterClass("Textify", CT_Tool, {
