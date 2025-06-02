@@ -1,4 +1,7 @@
-TextifyVersion = 1
+TextifySemanticVersion = "1.0.0"
+InternalVersionsBySemanticVersion = {
+  ["1.0.0"] = 1
+}
 RELEASE = false
 
 FuRegisterClass("Textify", CT_Tool, {
@@ -13,7 +16,7 @@ FuRegisterClass("Textify", CT_Tool, {
   REG_Fuse_NoEdit       = RELEASE,
   REG_Fuse_NoReload     = RELEASE,
   REG_SupportsDoD       = true,
-  REG_Version           = TextifyVersion
+  REG_Version           = InternalVersionsBySemanticVersion[TextifySemanticVersion]
 })
 
 local conversionStrategies = {
@@ -156,7 +159,7 @@ function Create()
     INP_External = false
   })
 
-  addInput("Textify v" .. TextifyVersion, "Version", {
+  addInput("Textify v" .. TextifySemanticVersion, "Version", {
     LINKID_DataType = "Text",
     INPID_InputControl = "LabelControl",
     INP_External = false,
