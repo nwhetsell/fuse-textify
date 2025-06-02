@@ -94,6 +94,14 @@ function Create()
     INP_Default = 2.5
   })
 
+  InputCharacterScaleFactor = addInput("Character Scale", "CharacterScaleFactor", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 8,
+    INP_MinScale = 0.1,
+    INP_Default = 1
+  })
+
   InputYOffsetFactor = addInput("Y Offset Factor", "YOffsetFactor", {
     LINKID_DataType = "Number",
     INPID_InputControl = "SliderControl",
@@ -418,8 +426,13 @@ function Process(request)
   -- Composite character shapes into a Shape object.
   local shape = Shape()
 
+  local characterScale = size / fontMetrics.Scale
+  local characterScaleFactor = InputCharacterScaleFactor:GetValue(request).Value --[[@as number]]
+  if characterScaleFactor > 0 then
+    characterScale = characterScale * characterScaleFactor
+  end
   local characterTranslationMatrix = Matrix4()
-  characterTranslationMatrix:Scale(size / fontMetrics.Scale, size / fontMetrics.Scale, 1)
+  characterTranslationMatrix:Scale(characterScale, characterScale, 1)
   local yOffsetFactor = InputYOffsetFactor:GetValue(request).Value --[[@as number]]
   characterTranslationMatrix:Move(0, yOffsetFactor * lineHeight, 0)
 
