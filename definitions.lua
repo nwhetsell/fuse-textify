@@ -239,7 +239,7 @@ TextStyleFontMetrics = {}
 function TextStyleFontMetrics:GetCharacterShape(characterByte, _) end
 
 ---@param characterByte integer
----@return number
 ---@param _ false
+---@return number
 ---@nodiscard
 function TextStyleFontMetrics:CharacterWidth(characterByte, _) end
