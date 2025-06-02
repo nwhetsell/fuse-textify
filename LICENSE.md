@@ -1,4 +1,4 @@
-Copyright 2022 © Igor Riđanović, Meta Fide
+Copyright © 2022 Igor Riđanović, Meta Fide
 
 Copyright © Nathan Whetsell
 
