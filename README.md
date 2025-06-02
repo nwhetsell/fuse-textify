@@ -8,7 +8,7 @@ has different options and adds some outputs.
 
 To install this Fuse, place [Textify.fuse](Textify.fuse) in
 
-> /Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Fuses
+> ~/Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Fuses
 
 on macOS, and
 
