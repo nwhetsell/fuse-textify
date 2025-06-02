@@ -7,9 +7,13 @@ that converts images to text. It is based on
 has different options and adds some outputs.
 
 To install this Fuse, place [Textify.fuse](Textify.fuse) in
+
 > /Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Fuses
+
 on macOS, and
+
 > %PROGRAMDATA%\Blackmagic Design\DaVinci Resolve\Fusion\Fuses
+
 on Windows.
 
 You can use this Fuse’s Scaled Downsampled Image output to add color to text.
