@@ -426,7 +426,12 @@ function Process(request)
       -- Translate to the center of the character.
       characterTranslationMatrix:Move(0.5 * characterWidth, 0, 0)
 
+      -- The GetCharacterShape method of TextStyleFontMetrics seems to be the
+      -- only way to create a glyph in a Fuse. GetCharacterShape seems to look
+      -- up glyphs by index (its input is an integer, not a string), so Unicode
+      -- support is effectively impossible.
       local characterShape = fontMetrics:GetCharacterShape(line:byte(i), false)
+
       -- Some characters (like spaces) have nil shape.
       if characterShape then
         shape:AddShape(characterShape:TransformOfShape(characterTranslationMatrix))
