@@ -3,7 +3,7 @@ This is a Fuse for
 and [Fusion](https://www.blackmagicdesign.com/products/fusion/)
 that converts images to text. It is based on
 [Meta Fide Computer Vision](https://www.metafide.com/?product=computer-vision)
-by [**@IgorRidanovic**](https://github.com/IgorRidanovic, but has different
+by [**@IgorRidanovic**](https://github.com/IgorRidanovic), but has different
 options and adds some outputs.
 
 To install this Fuse, place [Textify.fuse](Textify.fuse) in
