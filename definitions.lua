@@ -240,5 +240,6 @@ function TextStyleFontMetrics:GetCharacterShape(characterByte, _) end
 
 ---@param characterByte integer
 ---@return number
+---@param _ false
 ---@nodiscard
 function TextStyleFontMetrics:CharacterWidth(characterByte, _) end
