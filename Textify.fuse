@@ -221,70 +221,320 @@ function NotifyChanged(input, parameter, frame)
         -- This is
         --[[
           {
-            a = "@Aa",
-            b = "Bb",
-            c = "Cc",
-            d = "Dd",
-            e = "Ee",
-            f = "Ff",
-            g = "Gg",
-            h = "Hh",
+            a = "@Ⱥ₳Aa",
+            b = "ƁßBƂƃƀƄƅb",
+            c = "₡₵ȻƇƆCC¢ƈc",
+            d = "ƌƋƉƊDd",
+            e = "ƎEƏƐƸƹe℮",
+            f = "Ƒ₣Fƒf",
+            g = "ƓGg",
+            h = "HHǶƕh",
             i = "Ii",
-            j = "Jj",
-            k = "Kk",
-            l = "Ll",
-            m = "Mm",
-            n = "Nn",
-            o = "Oo",
-            p = "Pp",
+            j = "Jjȷ",
+            k = "₭Kk",
+            l = "ȽLƚl",
+            m = "ƜM₥m",
+            n = "₦ƝȠNNƞn",
+            o = "Ø0Oøo",
+            p = "ƤPPƥp",
             q = "Qq",
-            r = "Rr",
-            s = "Ss",
-            t = "Tt",
+            r = "ƦɌRɍr",
+            s = "ƧSȿsƨ",
+            t = "₮ȾƫƬTt",
             u = "Uu",
-            v = "Vv",
-            w = "Ww",
-            x = "Xx",
-            y = "Yy",
-            z = "Zz",
-            [" "]  = ";:,^`'. "
+            v = "ƲVv",
+            w = "₩Ww",
+            x = "Xx×",
+            y = "¥ƳYƴy",
+            z = "ƵZZƶz",
+            [" "]  = "▙▛▜▟▚▞▒░ "
           }
         ]]
         -- with appropriate escapes.
         Text("{\
-  a = \"@Aa\",\
-  b = \"Bb\",\
-  c = \"Cc\",\
-  d = \"Dd\",\
-  e = \"Ee\",\
-  f = \"Ff\",\
-  g = \"Gg\",\
-  h = \"Hh\",\
+  a = \"@Ⱥ₳Aa\",\
+  b = \"ƁßBƂƃƀƄƅb\",\
+  c = \"₡₵ȻƇƆCC¢ƈc\",\
+  d = \"ƌƋƉƊDd\",\
+  e = \"ƎEƏƐƸƹe℮\",\
+  f = \"Ƒ₣Fƒf\",\
+  g = \"ƓGg\",\
+  h = \"HHǶƕh\",\
   i = \"Ii\",\
-  j = \"Jj\",\
-  k = \"Kk\",\
-  l = \"Ll\",\
-  m = \"Mm\",\
-  n = \"Nn\",\
-  o = \"Oo\",\
-  p = \"Pp\",\
+  j = \"Jjȷ\",\
+  k = \"₭Kk\",\
+  l = \"ȽLƚl\",\
+  m = \"ƜM₥m\",\
+  n = \"₦ƝȠNNƞn\",\
+  o = \"Ø0Oøo\",\
+  p = \"ƤPPƥp\",\
   q = \"Qq\",\
-  r = \"Rr\",\
-  s = \"Ss\",\
-  t = \"Tt\",\
+  r = \"ƦɌRɍr\",\
+  s = \"ƧSȿsƨ\",\
+  t = \"₮ȾƫƬTt\",\
   u = \"Uu\",\
-  v = \"Vv\",\
-  w = \"Ww\",\
-  x = \"Xx\",\
-  y = \"Yy\",\
-  z = \"Zz\",\
-  [\" \"]  = \";:,^`'. \"\
+  v = \"ƲVv\",\
+  w = \"₩Ww\",\
+  x = \"Xx×\",\
+  y = \"¥ƳYƴy\",\
+  z = \"ƵZZƶz\",\
+  [\" \"]  = \"▙▛▜▟▚▞▒░ \"\
 }"),
         frame
       )
     end
   end
 end
+
+
+-- START OF https://github.com/blitmap/lua-utf8-simple/blob/7ef030750d8e408ac5d724aefab2ec8769731005/utf8_simple.lua
+
+local pattern = '[%z\1-\127\194-\244][\128-\191]*'
+
+-- helper function
+local posrelat =
+  function (pos, len)
+    if pos < 0 then
+      pos = len + pos + 1
+    end
+
+    return pos
+  end
+
+local utf8 = {}
+
+-- THE MEAT
+
+-- maps f over s's utf8 characters f can accept args: (visual_index, utf8_character, byte_index)
+utf8.map =
+  function (s, f, no_subs)
+    local i = 0
+
+    if no_subs then
+      for b, e in s:gmatch('()' .. pattern .. '()') do
+        i = i + 1
+        local c = e - b
+        f(i, c, b)
+      end
+    else
+      for b, c in s:gmatch('()(' .. pattern .. ')') do
+        i = i + 1
+        f(i, c, b)
+      end
+    end
+  end
+
+-- THE REST
+
+-- generator for the above -- to iterate over all utf8 chars
+utf8.chars =
+  function (s, no_subs)
+    return coroutine.wrap(function () return utf8.map(s, coroutine.yield, no_subs) end)
+  end
+
+-- returns the number of characters in a UTF-8 string
+utf8.len =
+  function (s)
+    -- count the number of non-continuing bytes
+    return select(2, s:gsub('[^\128-\193]', ''))
+  end
+
+-- replace all utf8 chars with mapping
+utf8.replace =
+  function (s, map)
+    return s:gsub(pattern, map)
+  end
+
+-- reverse a utf8 string
+utf8.reverse =
+  function (s)
+    -- reverse the individual greater-than-single-byte characters
+    s = s:gsub(pattern, function (c) return #c > 1 and c:reverse() end)
+
+    return s:reverse()
+  end
+
+-- strip non-ascii characters from a utf8 string
+utf8.strip =
+  function (s)
+    return s:gsub(pattern, function (c) return #c > 1 and '' end)
+  end
+
+-- like string.sub() but i, j are utf8 strings
+-- a utf8-safe string.sub()
+utf8.sub =
+  function (s, i, j)
+    local l = utf8.len(s)
+
+    i =       posrelat(i, l)
+    j = j and posrelat(j, l) or l
+
+    if i < 1 then i = 1 end
+    if j > l then j = l end
+
+    if i > j then return '' end
+
+    local diff = j - i
+    local iter = utf8.chars(s, true)
+
+    -- advance up to i
+    for _ = 1, i - 1 do iter() end
+
+    local c, b = select(2, iter())
+
+    -- i and j are the same, single-charaacter sub
+    if diff == 0 then
+      return string.sub(s, b, b + c - 1)
+    end
+
+    i = b
+
+    -- advance up to j
+    for _ = 1, diff - 1 do iter() end
+
+    c, b = select(2, iter())
+
+    return string.sub(s, i, b + c - 1)
+  end
+
+-- END OF https://github.com/blitmap/lua-utf8-simple/blob/7ef030750d8e408ac5d724aefab2ec8769731005/utf8_simple.lua
+
+---@param s string
+---@param i? integer
+---@param j? integer
+---@return integer[]
+utf8.codepoint = function(s, i, j)
+  i = i or 1
+  j = j or i
+
+  ---@return integer|nil
+  local function decode()
+    local bit = {}
+
+    -- From http://lua-users.org/wiki/BitUtils
+
+    ---@param a integer
+    ---@param b integer
+    ---@return integer
+    ---@nodiscard
+    bit.bxor = function(a, b)
+      local pow = 1
+      local c = 0
+      while a > 0 or b > 0 do
+        c = c + (bit.XOR_l[(a % 2)+1][(b % 2)+1] * pow)
+        a = math.floor(a/2)
+        b = math.floor(b/2)
+        pow = pow * 2
+      end
+      return c
+    end
+
+    bit.XOR_l = { {0, 1}, {1, 0} }
+
+    -- Based on https://github.com/davidm/lua-bit-numberlua/blob/30b6828b298b46411b548202d40524caba06a99c/lmod/bit/numberlua.lua
+    bit.MODM = 2^32 - 1
+
+    ---@param a integer
+    ---@return integer
+    ---@nodiscard
+    bit.bnot = function(a)
+      return bit.MODM - 1 - a
+    end
+
+    ---@param a integer
+    ---@param b integer
+    ---@return integer
+    ---@nodiscard
+    bit.band = function(a, b)
+      return ((a+b) - bit.bxor(a,b))/2
+    end
+
+    ---@param a integer
+    ---@param b integer
+    ---@return integer
+    ---@nodiscard
+    bit.bor = function(a, b)
+      return bit.MODM - bit.band(bit.MODM - a, bit.MODM - b)
+    end
+
+    ---@param a integer
+    ---@param disp integer
+    ---@return integer
+    ---@nodiscard
+    bit.rshift = function(a,disp) -- Lua5.2 insipred
+      if disp < 0 then return bit.lshift(a,-disp) end
+      return math.floor(a % 2^32 / 2^disp)
+    end
+
+    ---@param a integer
+    ---@param disp integer
+    ---@return integer
+    ---@nodiscard
+    bit.lshift = function(a,disp) -- Lua5.2 inspired
+      if disp < 0 then return bit.rshift(a,-disp) end
+      return (a * 2^disp) % 2^32
+    end
+
+    -- Based on
+    -- https://github.com/luapower/utf8/blob/702449d5728dd65c3ed41151ec32db5b1cc932de/utf8.lua#L38
+    local b1 = s:byte(i)
+
+    i = i + 1
+    if b1 < 0x80 then
+      return b1
+    end
+
+    if b1 < 0xC2 then
+      return nil
+    end
+
+    if b1 < 0xE0 then
+      local b2 = s:byte(i)
+      if 0x80 <= b2 and b2 <= 0xBF then
+        i = i + 1
+        return bit.lshift(bit.band(b1, 0x1F), 6) + bit.band(b2, 0x3F)
+      end
+    elseif b1 < 0xF0 then
+       local b2 = s:byte(i)
+       local b3 = s:byte(i + 1)
+       if not (
+            b2 < 0x80 or b2 > 0xBF
+         or b3 < 0x80 or b3 > 0xBF
+         or (b1 == 0xE0 and b2 < 0xA0)
+         or (b1 == 0xED and b2 > 0x9F)
+       ) then
+        i = i + 2
+        return bit.lshift(bit.band(b1, 0x0F), 12) + bit.lshift(bit.band(b2, 0x3F), 6) + bit.band(b3, 0x3F)
+       end
+    elseif b1 <= 0xF4 then
+      local b2 = s:byte(i)
+      local b3 = s:byte(i + 1)
+      local b4 = s:byte(i + 2)
+      if not (
+           b2 < 0x80 or b2 > 0xBF
+        or b3 < 0x80 or b3 > 0xBF
+        or b3 < 0x80 or b3 > 0xBF
+        or b4 < 0x80 or b4 > 0xBF
+        or (b1 == 0xF0 and b2 < 0x90)
+        or (b1 == 0xF4 and b2 > 0x8F)
+      ) then
+        i = i + 3
+        return bit.lshift(bit.band(b1, 0x07), 18) + bit.lshift(bit.band(b2, 0x3F), 12) + bit.lshift(bit.band(b3, 0x3F), 6) + bit.band(b4, 0x3F)
+      end
+    end
+
+    return nil
+  end
+
+  local codepoints = {} --[=[@as integer[]]=]
+  while i <= j do
+    local code = decode()
+    assert(code, "Invalid byte sequence in UTF-8 string")
+    table.insert(codepoints, code)
+  end
+  return codepoints
+end
+
 
 ---@param request Request
 function Process(request)
@@ -416,8 +666,8 @@ function Process(request)
         textIndex = (textIndex + 1) % text:len()
       end
 
-      local idx = math.floor(lightness * (characterList:len() - 1) + 1)
-      row[imageX + 1] = characterList:sub(idx, idx)
+      local idx = math.floor(lightness * (utf8.len(characterList) - 1) + 0.5) + 1
+      row[imageX + 1] = utf8.sub(characterList, idx, idx)
     end
 
     textLines[imageY] = table.concat(row)
@@ -437,16 +687,21 @@ function Process(request)
   characterTranslationMatrix:Move(0, yOffsetFactor * lineHeight, 0)
 
   for _, line in ipairs(textLines) do
-    local lineLength = line:len()
-    for i = 1, lineLength do
+    local lineLength = utf8.len(line)
+
+    -- From https://www.lua.org/manual/5.4/manual.html#pdf-utf8.codepoint, the
+    -- integer inputs to utf8.codepoint are *byte* positions, not character
+    -- positions. Thus, we want to pass line:len() (the number of bytes in line)
+    -- rather than lineLength.
+    for _, codepoint in ipairs(utf8.codepoint(line, 1, line:len())) do
       -- Translate to the center of the character.
       characterTranslationMatrix:Move(0.5 * characterWidth, 0, 0)
 
       -- The GetCharacterShape method of TextStyleFontMetrics seems to be the
       -- only way to create a glyph in a Fuse. GetCharacterShape seems to look
-      -- up glyphs by index (its input is an integer, not a string), so Unicode
-      -- support is effectively impossible.
-      local characterShape = fontMetrics:GetCharacterShape(line:byte(i), false)
+      -- up glyphs by index (its input is an integer, not a string), but limited
+      -- Unicode support is possible.
+      local characterShape = fontMetrics:GetCharacterShape(codepoint, false)
 
       -- Some characters (like spaces) have nil shape.
       if characterShape then
