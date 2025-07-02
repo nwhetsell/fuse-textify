@@ -1,6 +1,7 @@
-TextifySemanticVersion = "1.0.0"
+TextifySemanticVersion = "1.1.0"
 InternalVersionsBySemanticVersion = {
-  ["1.0.0"] = 1
+  ["1.0.0"] = 1,
+  ["1.1.0"] = 1
 }
 RELEASE = false
 
@@ -75,6 +76,21 @@ function Create()
     { CCS_AddString = "Square – " .. conversionStrategies[2]:gsub("%s+", "") },
     { CCS_AddString = "Numbers – " .. conversionStrategies[3]:gsub("%s+", "") },
     { CCS_AddString = "ASCII Characters" }
+  })
+
+  InputRandomness = addInput("Randomness probability", "Randomness", {
+    LINKID_DataType = "Number",
+    INPID_InputControl = "SliderControl",
+    INP_MaxScale = 1,
+    INP_MinScale = 0,
+    INP_Default = 0
+  })
+
+  InputRandomCharacters = addInput("Random characters", "RandomCharacters", {
+    LINKID_DataType = "Text",
+    INPID_InputControl = "TextEditControl",
+    INPS_DefaultText = "Xx?",
+    TEC_Lines = 1
   })
 
   InputCharactersPerLine = addInput("Characters per Line","CharactersPerLine", {
@@ -641,7 +657,10 @@ function Process(request)
   local frame = request:GetTime()
   local textIndex = frame
   textIndex = textIndex + (frame * charactersPerLine)
-  textIndex = textIndex % text:len()
+  textIndex = textIndex % utf8.len(text)
+
+  local randomness = InputRandomness:GetValue(request).Value --[[@as number]]
+  local randomCharacters = InputRandomCharacters:GetValue(request).Value --[[@as string]]
 
   local downsampledImagePixel = Pixel()
   local textLines = {}
@@ -664,6 +683,10 @@ function Process(request)
         assert(characterList, "No character list available for character " .. character .. " at index " .. textIndex .. " of input text \"" .. text .. "\"")
 
         textIndex = (textIndex + 1) % text:len()
+      end
+
+      if not isNilOrEmptyString(randomCharacters) and math.random() <= randomness then
+        characterList = randomCharacters
       end
 
       local idx = math.floor(lightness * (utf8.len(characterList) - 1) + 0.5) + 1
