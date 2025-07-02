@@ -69,7 +69,7 @@ function Create()
   InputConversionStrategyIndex = addInput("Conversion Strategy", "ConversionStrategyIndex", {
     LINKID_DataType = "Number",
     INPID_InputControl = "ComboControl",
-    INP_Default = 0.0,
+    INP_Default = 0,
     INP_Integer = true,
     { CCS_AddString = "Round – " .. conversionStrategies[1]:gsub("%s+", "") },
     { CCS_AddString = "Square – " .. conversionStrategies[2]:gsub("%s+", "") },
@@ -121,15 +121,15 @@ function Create()
   InputSaturation = addInput("Input Desaturation", "Saturation", {
     LINKID_DataType = "Number",
     INPID_InputControl = "SliderControl",
-    INP_Default = 0.0
+    INP_Default = 0
   })
 
   InputContrast = addInput("Input Contrast", "Contrast", {
     LINKID_DataType = "Number",
     INPID_InputControl = "SliderControl",
-    INP_MaxScale = 10.0,
-    INP_MinScale = 0.0,
-    INP_Default = 1.0
+    INP_MaxScale = 10,
+    INP_MinScale = 0,
+    INP_Default = 1
   })
 
   InputInvert = addInput("Invert Input", "Invert", {
@@ -171,14 +171,14 @@ function Create()
     LINKID_DataType = "Text",
     INPID_InputControl = "LabelControl",
     INP_External = false,
-    INP_Passive = true,
+    INP_Passive = true
   })
 
   addInput("Based on Computer Vision by Meta Fide", "Attribution", {
     LINKID_DataType = "Text",
     INPID_InputControl = "LabelControl",
     INP_External = false,
-    INP_Passive = true,
+    INP_Passive = true
   })
 
   InputImage = addInput("Input", "Input", {
