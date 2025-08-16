@@ -234,68 +234,35 @@ function NotifyChanged(input, parameter, frame)
   elseif InputTranslationTableDefaultButton == input then
     if parameter.Value == 1 then
       InputTranslationTableText:SetSource(
-        -- This is
-        --[[
-          {
-            a = "@Ⱥ₳Aa",
-            b = "ƁßBƂƃƀƄƅb",
-            c = "₡₵ȻƇƆCC¢ƈc",
-            d = "ƌƋƉƊDd",
-            e = "ƎEƏƐƸƹe℮",
-            f = "Ƒ₣Fƒf",
-            g = "ƓGg",
-            h = "HHǶƕh",
-            i = "Ii",
-            j = "Jjȷ",
-            k = "₭Kk",
-            l = "ȽLƚl",
-            m = "ƜM₥m",
-            n = "₦ƝȠNNƞn",
-            o = "Ø0Oøo",
-            p = "ƤPPƥp",
-            q = "Qq",
-            r = "ƦɌRɍr",
-            s = "ƧSȿsƨ",
-            t = "₮ȾƫƬTt",
-            u = "Uu",
-            v = "ƲVv",
-            w = "₩Ww",
-            x = "Xx×",
-            y = "¥ƳYƴy",
-            z = "ƵZZƶz",
-            [" "]  = "▙▛▜▟▚▞▒░ "
-          }
-        ]]
-        -- with appropriate escapes.
-        Text("{\
-  a = \"@Ⱥ₳Aa\",\
-  b = \"ƁßBƂƃƀƄƅb\",\
-  c = \"₡₵ȻƇƆCC¢ƈc\",\
-  d = \"ƌƋƉƊDd\",\
-  e = \"ƎEƏƐƸƹe℮\",\
-  f = \"Ƒ₣Fƒf\",\
-  g = \"ƓGg\",\
-  h = \"HHǶƕh\",\
-  i = \"Ii\",\
-  j = \"Jjȷ\",\
-  k = \"₭Kk\",\
-  l = \"ȽLƚl\",\
-  m = \"ƜM₥m\",\
-  n = \"₦ƝȠNNƞn\",\
-  o = \"Ø0Oøo\",\
-  p = \"ƤPPƥp\",\
-  q = \"Qq\",\
-  r = \"ƦɌRɍr\",\
-  s = \"ƧSȿsƨ\",\
-  t = \"₮ȾƫƬTt\",\
-  u = \"Uu\",\
-  v = \"ƲVv\",\
-  w = \"₩Ww\",\
-  x = \"Xx×\",\
-  y = \"¥ƳYƴy\",\
-  z = \"ƵZZƶz\",\
-  [\" \"]  = \"▙▛▜▟▚▞▒░ \"\
-}"),
+        Text([[{
+  a = "@Ⱥ₳Aa",
+  b = "ƁßBƂƃƀƄƅb",
+  c = "₡₵ȻƇƆCC¢ƈc",
+  d = "ƌƋƉƊDd",
+  e = "ƎEƏƐƸƹe℮",
+  f = "Ƒ₣Fƒf",
+  g = "ƓGg",
+  h = "HHǶƕh",
+  i = "Ii",
+  j = "Jjȷ",
+  k = "₭Kk",
+  l = "ȽLƚl",
+  m = "ƜM₥m",
+  n = "₦ƝȠNNƞn",
+  o = "Ø0Oøo",
+  p = "ƤPPƥp",
+  q = "Qq",
+  r = "ƦɌRɍr",
+  s = "ƧSȿsƨ",
+  t = "₮ȾƫƬTt",
+  u = "Uu",
+  v = "ƲVv",
+  w = "₩Ww",
+  x = "Xx×",
+  y = "¥ƳYƴy",
+  z = "ƵZZƶz",
+  [" "]  = "▙▛▜▟▚▞▒░ "
+}]]),
         frame
       )
     end
