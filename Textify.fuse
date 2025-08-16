@@ -261,7 +261,7 @@ function NotifyChanged(input, parameter, frame)
   x = "Xx×",
   y = "¥ƳYƴy",
   z = "ƵZZƶz",
-  [" "]  = "▙▛▜▟▚▞▒░ "
+  [" "] = "▙▛▜▟▚▞▒░ "
 }]]),
         frame
       )
