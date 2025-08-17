@@ -669,7 +669,7 @@ function Process(request)
   downsampledImage = downsampledImage:ApplyMatrixOf(colorMatrix, {})
 
   -- The Invert checkbox is confusing because we invert the image when the
-  -- checkbox is *disabled*. This is because strings of characters that map to
+  -- checkbox is *deselected*. This is because strings of characters that map to
   -- pixels are typically ordered from most dense (like @) to least dense (like
   -- a space character). Consequently, the most dense characters are at the
   -- lowest indexes of a string, and the least dense characters are at the
