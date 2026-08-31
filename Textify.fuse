@@ -24,7 +24,8 @@ local conversionStrategies = {
   "@BG8Cou; ",
   "#|/+=-. ",
   "8960453271 ",
-  "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. "
+  "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. ",
+  "█▓▒░"
 }
 
 function Create()
@@ -75,7 +76,8 @@ function Create()
     { CCS_AddString = "Round – " .. conversionStrategies[1]:gsub("%s+", "") },
     { CCS_AddString = "Square – " .. conversionStrategies[2]:gsub("%s+", "") },
     { CCS_AddString = "Numbers – " .. conversionStrategies[3]:gsub("%s+", "") },
-    { CCS_AddString = "ASCII Characters" }
+    { CCS_AddString = "ASCII Characters" },
+    { CCS_AddString = "Blocks" }
   })
 
   InputRandomness = addInput("Randomness probability", "Randomness", {
